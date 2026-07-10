@@ -6,6 +6,8 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader
 from PIL import Image
 
+from create_qrs_from_csv import create_qr_pngs_from_csv
+
 
 # Example trimming function
 def trim_qr(qr_path, trim_pixels=75):
@@ -41,7 +43,15 @@ QR_SIZE = 1.17 * DPI    # 83.5pt
 QR_X = (CARD_WIDTH - QR_SIZE) / 2  # center horizontally
 QR_Y = CARD_HEIGHT - QR_SIZE - 1/6 * DPI # 10pt margin from top
 
-def create_ticket_pdfs():
+def empty_folder(folder):
+    for f in os.listdir(folder):
+        path = os.path.join(folder, f)
+        if os.path.isfile(path):
+            os.remove(path)
+
+
+def create_ticket_pdfs_from_qr_pngs():
+    empty_folder(OUTPUT_FOLDER)
     for qr_file in os.listdir(QR_FOLDER):
         if qr_file.endswith(".png"):
             ticket_number = os.path.splitext(qr_file)[0]
@@ -93,5 +103,6 @@ def consolidate_pdfs():
 
     print(f"Combined PDF created: {output_pdf}")
 
-# create_ticket_pdfs()
+create_qr_pngs_from_csv()
+create_ticket_pdfs_from_qr_pngs()
 consolidate_pdfs()
